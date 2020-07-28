@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import PropTypes from "prop-types";
-
+import GithubContext from '../../context/github/githubContext';
 // Here we pulled out the props that we were calling in methods which allows us to remove any this.props._____ from inside our component. Allows cleaner code and easier to ready code. We also no longer use this.setState see examples below.
 
-const Search = ({ searchUsers, showClear, clearUsers, setAlert }) => {
+const Search = ({ showClear, clearUsers, setAlert }) => {
+
+  const githubContext = useContext(GithubContext)
 
   // The way useState works is we destructure, we pull out text (or whatever we want to call this piece of state), and then we create a method to change the state, usually you want to name it set and whatever the state is named, then we set that equal to useState() and add whatever we want to pass as the default value in the args.
 
@@ -16,7 +18,7 @@ const Search = ({ searchUsers, showClear, clearUsers, setAlert }) => {
     if (text === "") {
       setAlert("Please enter a search", "light");
     } else {
-      searchUsers(text);
+      githubContext.searchUsers(text);
       setText("");
     }
   };
@@ -53,7 +55,6 @@ const Search = ({ searchUsers, showClear, clearUsers, setAlert }) => {
 
 // We move propTypes to below the function and define them here.
 Search.propTypes = {
-  searchUsers: PropTypes.func.isRequired,
   clearUsers: PropTypes.func.isRequired,
   showClear: PropTypes.bool.isRequired,
   setAlert: PropTypes.func.isRequired,
