@@ -1,98 +1,42 @@
-import React, { Fragment, useState } from "react";
+import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "./App.css";
+
 import Navbar from "./components/layout/Navbar";
-import Users from "./components/users/Users";
 import User from './components/users/User';
-import Search from "./components/users/Search";
+import Home from './components/pages/Home'
 import About from "./components/pages/About"
+import NotFound from './components/pages/NotFound'
 import Alert from "./components/layout/Alert";
-import axios from "axios";
 
 import GithubState from './context/github/GithubState';
+import AlertState from './context/alert/AlertState';
 
 // Reminder to remove all this.state//this.props from any lines below when using the useState hooks.
 
 // Also reminder to add const to all methods being called since they are no longer inside a class.
 
+// Refactored to the Context/Reducer hooks. See each context folder to see the methods we use there and the actions we dispatch.
+
 const App = () => {
-  // Setting up multiple states using the useState hook
-  const [users, setUsers] = useState([]);
-  const [repos, setRepos] = useState([])
-  const [user, setUser] = useState({})
-  const [loading, setLoading] = useState(false)
-  const [alert, setAlert] = useState(null)
-
-
-  // Get A Single User
-  const getUser = async (username) => {
-    setLoading(true)
-
-    const res = await axios.get(
-      `https://api.github.com/users/${username}?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
-    );
-
-    // Gets a single users data
-    setUser(res.data);
-    setLoading(false);
-  }
-
-  // Get User Repos
-  const getUserRepos = async username => {
-    setLoading(true)
-
-    const res = await axios.get(
-      `https://api.github.com/users/${username}/repos?per_page=5&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
-    );
-
-    setRepos(res.data);
-    setLoading(false);
-  }
-
-
-  // This changes to useState.
-  const clearUsers = () => {
-    setUsers([])
-    setLoading(false)
-  };
-
-  // Sets an alert when no text in search
-  const showAlert = (msg, type) => {
-    setAlert({ msg, type })
-
-    setTimeout(() => setAlert(null), 5000)
-  };
-
   return (
     <GithubState>
-      <Router>
-        <div className="App">
-          <Navbar />
-          <div className="container">
-            <Alert alert={alert} />
-            <Switch>
-              <Route
-                exact
-                path="/"
-                render={(props) => (
-                  <Fragment>
-                    <Search
-                      clearUsers={clearUsers}
-                      showClear={users.length > 0 ? true : false}
-                      setAlert={showAlert}
-                    />
-                    <Users loading={loading} users={users} />
-                  </Fragment>
-                )}
-              />
-              <Route exact path="/about" component={About} />
-              <Route exact path='/user/:login' render={props => (
-                <User {...props} getUser={getUser} user={user} loading={loading} getUserRepos={getUserRepos} repos={repos} />
-              )} />
-            </Switch>
+      <AlertState>
+        <Router>
+          <div className="App">
+            <Navbar />
+            <div className="container">
+              <Alert />
+              <Switch>
+                <Route exact path="/" component={Home}/>
+                <Route exact path="/about" component={About} />
+                <Route exact path='/user/:login' component={User} />
+                <Route component={NotFound} />
+              </Switch>
+            </div>
           </div>
-        </div>
-      </Router>
+        </Router>
+      </AlertState>
     </GithubState>
   );
 

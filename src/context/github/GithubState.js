@@ -41,21 +41,52 @@ const GithubState = props => {
         );
 
         // Sets this to the items that come back from a search
-        dispatch({SEARCH_USERS, payload: res.data});
+        // Make sure in the dispatch you declare the type: inside the object
+        // Forgot type initially and broke the app.
+        dispatch({
+            type: SEARCH_USERS,
+            payload: res.data.items
+        });
     };
 
 
     // Get User
 
+    // Get A Single User
+    const getUser = async (username) => {
+        setLoading()
+
+        const res = await axios.get(
+            `https://api.github.com/users/${username}?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
+        );
+
+        // Gets a single users data
+        dispatch({ type: GET_USER, payload: res.data })
+    }
+
 
     // Get Repos
 
+    // Get User Repos
+    const getUserRepos = async username => {
+
+
+        const res = await axios.get(
+            `https://api.github.com/users/${username}/repos?per_page=5&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
+        );
+
+        dispatch({ type: GET_REPOS, payload: res.data})
+
+    }
+
+
 
     // Clear Users
-
+    // This changes to useState.
+    const clearUsers = () => dispatch({ type: CLEAR_USERS });
 
     // Set Loading
-    const setLoading = () => dispatch({ type: SET_LOADING});
+    const setLoading = () => dispatch({ type: SET_LOADING });
 
 
     // What we want to return is the Provider. It will take in one prop 'value' which we want to set up like below and give it anything we want available inside the entire app.
@@ -69,7 +100,10 @@ const GithubState = props => {
             user: state.user,
             repos: state.repos,
             loading: state.loading,
-            searchUsers
+            searchUsers,
+            clearUsers,
+            getUser,
+            getUserRepos,
         }}
     >
         {props.children}

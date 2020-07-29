@@ -1,10 +1,14 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import Spinner from "../layout/Spinner";
 import Repos from '../repos/Repos';
-import PropTypes from "prop-types";
+// import PropTypes from "prop-types";
+import GithubContext from '../../context/github/githubContext';
 
-const User = ({ user, loading, getUser, getUserRepos, match, repos }) => {
+const User = ({ match }) => {
+  const githubContext = useContext(GithubContext);
+
+  const { getUser, loading, user, repos, getUserRepos } = githubContext
 
   //For useEffect you pass in an arrow function, you don't want to return anything directly. You'll open a set of {} and you run your methods there.
   useEffect(() => {
@@ -19,7 +23,7 @@ const User = ({ user, loading, getUser, getUserRepos, match, repos }) => {
 
   // The [] would be for any dependencies that you have for the methods which the React team would say you should always have.
 
-// `````````````````````````````````````````````````````````````````````````
+  // `````````````````````````````````````````````````````````````````````````
 
   // Left as is just removed this.props.user and simply called user since we destructured it above.
   const {
@@ -112,15 +116,7 @@ const User = ({ user, loading, getUser, getUserRepos, match, repos }) => {
 }
 
 // Proptypes moves to outside the function.
-User.propTypes = {
-
-  getUser: PropTypes.func.isRequired,
-  user: PropTypes.object.isRequired,
-  loading: PropTypes.bool,
-  getUserRepos: PropTypes.func.isRequired,
-  repos: PropTypes.array.isRequired,
-
-}
+// UPDATE: Proptypes removed as no longer needed since props are being handled in the reducer/state hooks
 
 export default User;
 

@@ -1,22 +1,23 @@
 import React, { useState, useContext } from "react";
-import PropTypes from "prop-types";
 import GithubContext from '../../context/github/githubContext';
+import AlertContext from '../../context/alert/alertContext';
 // Here we pulled out the props that we were calling in methods which allows us to remove any this.props._____ from inside our component. Allows cleaner code and easier to ready code. We also no longer use this.setState see examples below.
 
-const Search = ({ showClear, clearUsers, setAlert }) => {
+const Search = () => {
 
   const githubContext = useContext(GithubContext)
+  const alertContext = useContext(AlertContext)
 
   // The way useState works is we destructure, we pull out text (or whatever we want to call this piece of state), and then we create a method to change the state, usually you want to name it set and whatever the state is named, then we set that equal to useState() and add whatever we want to pass as the default value in the args.
 
   // Ex: const [someState, setSomeState] = useState(default of the state);
-  const [text, setText] = useState("");
+  const [text, setText,] = useState("");
 
   // We've removed any this.state or this.props since we destructured this component. We also now call the setText method we defined in the useState hook. 
   const onSubmit = (e) => {
     e.preventDefault();
     if (text === "") {
-      setAlert("Please enter a search", "light");
+      alertContext.setAlert("Please enter a search", "light");
     } else {
       githubContext.searchUsers(text);
       setText("");
@@ -44,8 +45,8 @@ const Search = ({ showClear, clearUsers, setAlert }) => {
           className="btn btn-dark btn-block"
         />
       </form>
-      {showClear && (
-        <button className="btn btn-light btn-block" onClick={clearUsers}>
+      {githubContext.users.length > 0 && (
+        <button className="btn btn-light btn-block" onClick={githubContext.clearUsers}>
           Clear
         </button>
       )}
@@ -54,11 +55,10 @@ const Search = ({ showClear, clearUsers, setAlert }) => {
 }
 
 // We move propTypes to below the function and define them here.
-Search.propTypes = {
-  clearUsers: PropTypes.func.isRequired,
-  showClear: PropTypes.bool.isRequired,
-  setAlert: PropTypes.func.isRequired,
-};
+// Commenting out since proptypes no needed.
+// Search.propTypes = {
+//   setAlert: PropTypes.func.isRequired,
+// };
 
 // Export does not change.
 export default Search;
